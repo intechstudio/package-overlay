@@ -1,0 +1,21 @@
+<div id="display-wrapper" style="width:127px;background-color:black;height:16px">
+    <div id="display" style="background-color:orange;height: 16px;">
+
+    </div>
+</div>
+
+<p id="demo" style="color:white;font-weight: bold;"></p>
+
+<script>
+
+    const ipc = require("electron").ipcRenderer;
+
+    const slider = document.getElementById("display")
+
+    ipc.on('overlay', (event, arg) => {
+        const [index, value] = arg;
+        slider.style.width = value + 'px';
+        document.getElementById("demo").innerHTML = value;
+    });
+
+</script>

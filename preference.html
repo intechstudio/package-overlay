@@ -1,0 +1,24 @@
+<style>
+
+</style>
+<div class="p-4 bg-secondary rounded-lg flex flex-col ">
+  Package config!
+  <textarea id="packageConsole" class="w-full h-32 bg-gray-800 text-white"></textarea>
+</div>
+<script>
+  {
+    const messagePort = createPackageMessagePort(
+      "package-overlay"
+    );
+
+    messagePort.onmessage = (e) => {
+      const data = e.data;
+      packageConsole.value += data.message + "\r\n";
+      if (data.type === "echo") {
+        packageConsole.value += data.message + "\r\n";
+      }
+    };
+
+    messagePort.start();
+  }
+</script>
