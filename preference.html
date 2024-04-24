@@ -1,24 +1,133 @@
 <style>
-
+  .container {
+    position: relative;
+    width: 100px; /* Adjust the width of the rectangle */
+    height: 55px; /* Adjust the height of the rectangle */
+    border: 2px solid #ffffff4c;
+    margin: 18px;
+  }
+  .area-selector {
+    position: absolute;
+    width: 20px; /* Adjust the size of the corner selectors */
+    height: 20px; /* Adjust the size of the corner selectors */
+    background-color: #4d6166;
+    border: 2px solid #1e2628;
+    cursor: pointer;
+  }
+  .top-left {
+    top: -12px;
+    left: -12px;
+  }
+  .top-right {
+    top: -12px;
+    right: -12px;
+  }
+  .bottom-left {
+    bottom: -12px;
+    left: -12px;
+  }
+  .bottom-right {
+    bottom: -12px;
+    right: -12px;
+  }
+  .center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .selected {
+    background-color: #788991; /* Change background color when selected */
+  }
 </style>
-<div class="p-4 bg-secondary rounded-lg flex flex-col ">
-  Package config!
-  <textarea id="packageConsole" class="w-full h-32 bg-gray-800 text-white"></textarea>
+<div class="p-4 bg-secondary rounded-lg flex flex-col">
+  <div>
+    Number of rows:
+    <input
+      type="number"
+      id="rowInput"
+      class="h-auto bg-primary focus:outline-none py-1 px-2 border border-transparent"
+      style="width: 60px"
+    />
+  </div>
+  <div class="py-1">
+    Hide overlay after
+    <input
+      type="number"
+      id="timeoutInput"
+      class="h-auto bg-primary focus:outline-none py-1 px-2 border border-transparent"
+      style="width: 60px"
+    />ms
+  </div>
+  <div class="container">
+    <div
+      class="area-selector top-left selected"
+      onclick="selectArea('top-left')"
+    ></div>
+    <div
+      class="area-selector top-right"
+      onclick="selectArea('top-right')"
+    ></div>
+    <div
+      class="area-selector bottom-left"
+      onclick="selectArea('bottom-left')"
+    ></div>
+    <div
+      class="area-selector bottom-right"
+      onclick="selectArea('bottom-right')"
+    ></div>
+    <div class="area-selector center" onclick="selectArea('center')"></div>
+  </div>
 </div>
 <script>
   {
-    const messagePort = createPackageMessagePort(
-      "package-overlay"
-    );
+    const rowInput = document.getElementById("rowInput");
+    const timeoutInput = document.getElementById("timeoutInput");
+    let currentArea = "top-left";
+    const messagePort = createPackageMessagePort("package-overlay");
 
     messagePort.onmessage = (e) => {
       const data = e.data;
-      packageConsole.value += data.message + "\r\n";
-      if (data.type === "echo") {
-        packageConsole.value += data.message + "\r\n";
+      if (data.type === "configuration") {
+        rowInput.value = data.numberOfRows;
+        timeoutInput.value = data.timeoutValue;
+        selectArea(data.selectedArea ?? "top-left");
       }
     };
 
     messagePort.start();
+    messagePort.postMessage({
+      type: "request-configuration",
+    });
+
+    function selectArea(area) {
+      currentArea = area;
+      document.querySelectorAll(".area-selector").forEach(function (selector) {
+        selector.classList.remove("selected");
+      });
+      if (area) {
+        document.querySelector("." + area).classList.add("selected");
+      }
+      updateConfiguration();
+    }
+
+    function updateConfiguration(e) {
+      let numberOfRows = Number(rowInput.value);
+      if (isNaN(numberOfRows)) {
+        numberOfRows = 4;
+      } else if (numberOfRows < 1) {
+        numberOfRows = 1;
+      }
+      numberOfRows = Math.round(numberOfRows);
+      rowInput.value = numberOfRows;
+      messagePort.postMessage({
+        type: "save-configuration",
+        numberOfRows: numberOfRows,
+        selectedArea: currentArea,
+        timeoutValue: timeoutInput.value,
+      });
+    }
+
+    rowInput.addEventListener("change", updateConfiguration);
+    timeoutInput.addEventListener("change", updateConfiguration);
   }
 </script>

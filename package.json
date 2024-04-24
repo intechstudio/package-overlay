@@ -1,11 +1,12 @@
 {
   "name": "package-overlay",
-  "version": "1.0.0",
-  "description": "Overlay",
+  "version": "0.0.1",
+  "description": "Simple Overlay",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "format": "prettier --write ."
   },
   "author": "",
   "license": "ISC",

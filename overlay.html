@@ -1,21 +1,139 @@
-<div id="display-wrapper" style="width:127px;background-color:black;height:16px">
-    <div id="display" style="background-color:orange;height: 16px;">
-
-    </div>
+<div
+  id="slider-list"
+  style="
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    height: 80px;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    padding-bottom: 4px;
+    padding-left: 4px;
+  "
+>
+  <div
+    id="display-wrapper-original"
+    style="
+      width: 127px;
+      background-color: black;
+      height: 16px;
+      margin-top: 4px;
+      margin-right: 4px;
+      position: relative;
+      visibility: hidden;
+    "
+  >
+    <div style="background-color: orange; height: 16px; width: 0px"></div>
+    <p
+      style="
+        color: white;
+        font-weight: bold;
+        position: absolute;
+        margin: 0;
+        top: 0;
+        text-align: center;
+        width: 100%;
+      "
+    />
+  </div>
 </div>
 
-<p id="demo" style="color:white;font-weight: bold;"></p>
-
 <script>
+  const primarySliderDiv = document.getElementById("display-wrapper-original");
+  const sliderList = document.getElementById("slider-list");
+  const sliders = [];
 
-    const ipc = require("electron").ipcRenderer;
+  let timeoutValue = 0;
+  let timeoutId = undefined;
 
-    const slider = document.getElementById("display")
+  window.onmessage = (event) => {
+    const [port] = event.ports;
+    port.onmessage = (e) => {
+      let data = e.data;
+      if (data.id == "channel-value") {
+        sliderList.style.visibility = "visible";
+        if (timeoutValue) {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            console.log("TIMEOUT CALLED");
+            sliderList.style.visibility = "hidden";
+          }, timeoutValue);
+        }
 
-    ipc.on('overlay', (event, arg) => {
-        const [index, value] = arg;
-        slider.style.width = value + 'px';
-        document.getElementById("demo").innerHTML = value;
-    });
+        let channel = data.channel;
+        if (sliders.length == 0) {
+          primarySliderDiv.style.removeProperty("visibility");
+          sliders.push(primarySliderDiv);
+        }
+        while (channel >= sliders.length) {
+          let clonedElement = primarySliderDiv.cloneNode(true);
+          clonedElement.firstElementChild.style.width = "0px";
+          clonedElement.firstElementChild.nextElementSibling.innerHTML = "";
+          delete clonedElement.id;
+          sliderList.appendChild(clonedElement);
+          sliders.push(clonedElement);
+        }
 
+        let slider = sliders[channel].firstElementChild;
+        let text = slider.nextElementSibling;
+        text.innerHTML = data.value;
+
+        let numberValue = Number(data.value);
+        if (!isNaN(numberValue)) {
+          let minValue = Number(data.min);
+          let maxValue = Number(data.max);
+          if (!isNaN(minValue) && !isNaN(maxValue)) {
+            numberValue =
+              ((numberValue - minValue) / (maxValue - minValue)) * 127;
+          }
+          numberValue = Math.min(Math.max(numberValue, 0), 127);
+          slider.style.width = numberValue + "px";
+        } else {
+          slider.style.width = "0px";
+        }
+      } else if (data.id == "configuration") {
+        let numberOfRows = data.numberOfRows;
+        sliderList.style.height = 20 * numberOfRows + "px";
+
+        if (
+          data.timeoutValue &&
+          !isNaN(Number(data.timeoutValue)) &&
+          Number(data.timeoutValue) > 0
+        ) {
+          if (!timeoutValue) {
+            sliderList.style.visibility = "hidden";
+          }
+          timeoutValue = Number(data.timeoutValue);
+        } else {
+          timeoutValue = undefined;
+          clearTimeout(timeoutId);
+          sliderList.style.visibility = "visible";
+        }
+
+        sliderList.style.removeProperty("top");
+        sliderList.style.removeProperty("left");
+        sliderList.style.removeProperty("bottom");
+        sliderList.style.removeProperty("right");
+        sliderList.style.removeProperty("transform");
+        if (data.selectedArea == "center") {
+          sliderList.style.top = "50%";
+          sliderList.style.left = "50%";
+          sliderList.style.transform = "translate(-50%, -50%)";
+        }
+        if (data.selectedArea.includes("left")) {
+          sliderList.style.left = "0px";
+        }
+        if (data.selectedArea.includes("top")) {
+          sliderList.style.top = "0px";
+        }
+        if (data.selectedArea.includes("bottom")) {
+          sliderList.style.bottom = "0px";
+        }
+        if (data.selectedArea.includes("right")) {
+          sliderList.style.right = "0px";
+        }
+      }
+    };
+    port.start();
+  };
 </script>
