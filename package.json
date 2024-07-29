@@ -11,7 +11,8 @@
   "author": "",
   "license": "ISC",
   "grid_editor": {
-    "preference": "preference.html"
+    "componentsPath": "components/dist/components.js",
+    "preferenceComponent": "overlay-preference"
   },
   "dependencies": {
     "patch-package": "^8.0.0"

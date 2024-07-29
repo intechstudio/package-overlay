@@ -11,7 +11,7 @@ let timeoutValue;
 
 exports.loadPackage = async function (gridController, persistedData) {
   controller = gridController;
-  controller.sendMessageToProcess({
+  controller.sendMessageToEditor({
     type: "create-window",
     windowId: "overlay-window",
     windowFile: `file://${path.join(__dirname, "overlay.html")}`,
@@ -25,7 +25,7 @@ exports.loadPackage = async function (gridController, persistedData) {
   numberOfRows = persistedData?.numberOfRows ?? 4;
   selectedArea = persistedData?.selectedArea ?? "top-left";
   timeoutValue = persistedData?.timeoutValue;
-  /*controller.sendMessageToProcess(
+  /*controller.sendMessageToEditor(
     {
       type: "create-window",
       windowId: "overlay-window",
@@ -45,17 +45,12 @@ exports.loadPackage = async function (gridController, persistedData) {
   let iconSvg = fs.readFileSync(path.resolve(__dirname, "bar-icon.svg"), {
     encoding: "utf-8",
   });
-
-  let actionHtml = fs.readFileSync(
-    path.resolve(__dirname, "overlay_action.html"),
-    { encoding: "utf-8" },
-  );
-  controller.sendMessageToRuntime({
-    id: "add-action",
+  
+  controller.sendMessageToEditor({
+    type: "add-action",
     info: {
       actionId: 0,
       short: "xsmplo",
-      name: "SimpleOverlay_ShowValue",
       displayName: "Show Value",
       rendering: "standard",
       category: "overlay",
@@ -69,18 +64,18 @@ exports.loadPackage = async function (gridController, persistedData) {
       hideIcon: false,
       type: "single",
       toggleable: true,
-      actionHtml: actionHtml,
+      actionComponent: "show-overlay-value-action",
     },
   });
 };
 
 exports.unloadPackage = async function () {
-  controller.sendMessageToProcess({
+  controller.sendMessageToEditor({
     type: "close-window",
     windowId: "overlay-window",
   });
-  controller.sendMessageToRuntime({
-    id: "remove-action",
+  controller.sendMessageToEditor({
+    type: "remove-action",
     actionId: 0,
   });
   controller = undefined;
@@ -132,8 +127,8 @@ async function onMessage(port, data) {
     numberOfRows = data.numberOfRows;
     selectedArea = data.selectedArea;
     timeoutValue = data.timeoutValue;
-    controller.sendMessageToRuntime({
-      id: "persist-data",
+    controller.sendMessageToEditor({
+      type: "persist-data",
       data: {
         numberOfRows,
         selectedArea,
