@@ -45,7 +45,7 @@ exports.loadPackage = async function (gridController, persistedData) {
   let iconSvg = fs.readFileSync(path.resolve(__dirname, "bar-icon.svg"), {
     encoding: "utf-8",
   });
-  
+
   controller.sendMessageToEditor({
     type: "add-action",
     info: {
