@@ -49,7 +49,7 @@
   }()
 </script>
 
-<select-voice-channel 
+<show-overlay-value
   class="{$$props.class} flex flex-col w-full pb-2 px-2 pointer-events-auto"
   bind:this={ref}
 >
@@ -87,4 +87,4 @@
                 }}/>
         </div>
     </div>
-</select-voice-channel>
+</show-overlay-value>
