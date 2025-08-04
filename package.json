@@ -9,6 +9,9 @@
     "install:components": "cd ./components && npm install",
     "build:components": "cd ./components && npm run build",
     "dev:components": "cd ./components && npm run dev",
+    "install:overlay-page": "cd ./overlay_element && npm install",
+    "build:overlay-page": "cd ./overlay_element && npm run build",
+    "dev:overlay-page": "cd ./overlay_element && npm run dev",
     "postinstall": "run-p install:*",
     "build": "run-p build:*",
     "dev": "run-p dev:*"

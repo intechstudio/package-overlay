@@ -14,33 +14,19 @@ exports.loadPackage = async function (gridController, persistedData) {
   controller.sendMessageToEditor({
     type: "create-window",
     windowId: "overlay-window",
+    title: "Editor - Overlay",
     windowFile: `file://${path.join(__dirname, "overlay.html")}`,
     fullscreen: true,
     transparent: true,
     alwaysOnTop: true,
     ignoreMouse: true,
-    x: 0,
-    y: 0,
+    resizable: false,
+    x: 10,
+    y: 10,
   });
   numberOfRows = persistedData?.numberOfRows ?? 4;
   selectedArea = persistedData?.selectedArea ?? "top-left";
   timeoutValue = persistedData?.timeoutValue;
-  /*controller.sendMessageToEditor(
-    {
-      type: "create-window",
-      windowId: "overlay-window",
-      windowFile: `file://${path.join(__dirname, "overlay.html")}`,
-      fullscreen: false,
-      width: 300,
-      height: 400,
-      resizable: true,
-      transparent: false,
-      alwaysOnTop: false,
-      ignoreMouse: false,
-      x: 0,
-      y: 0,
-    }
-  );*/
 
   let iconSvg = fs.readFileSync(
     path.resolve(__dirname, "overlay-black-icon.svg"),

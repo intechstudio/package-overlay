@@ -12,6 +12,7 @@ if (!fs.existsSync(subfolder)) {
 const excludedFiles = [
   subfolder,
   "components",
+  "overlay_element",
   "archive.js",
   "build.js",
   ".github",
@@ -30,6 +31,10 @@ for (const file of files) {
 //Copy components dist folder
 fs.mkdirSync(`${subfolder}/components`);
 fs.renameSync("components/dist", `${subfolder}/components/dist`);
+
+//Copy overlay_element dist folder
+fs.mkdirSync(`${subfolder}/overlay_element`);
+fs.renameSync("overlay_element/dist", `${subfolder}/overlay_element/dist`);
 
 output.on("close", () => {
   console.log("Archive created successfully.");
