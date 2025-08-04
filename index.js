@@ -42,9 +42,12 @@ exports.loadPackage = async function (gridController, persistedData) {
     }
   );*/
 
-  let iconSvg = fs.readFileSync(path.resolve(__dirname, "bar-icon.svg"), {
-    encoding: "utf-8",
-  });
+  let iconSvg = fs.readFileSync(
+    path.resolve(__dirname, "overlay-black-icon.svg"),
+    {
+      encoding: "utf-8",
+    },
+  );
 
   controller.sendMessageToEditor({
     type: "add-action",

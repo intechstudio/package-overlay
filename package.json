@@ -1,7 +1,7 @@
 {
   "name": "package-overlay",
-  "version": "0.0.1",
-  "description": "Simple Overlay",
+  "version": "0.0.2",
+  "description": "Overlay",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,10 +17,10 @@
   "license": "ISC",
   "grid_editor": {
     "componentsPath": "components/dist/components.js",
-    "preferenceComponent": "overlay-preference"
-  },
-  "dependencies": {
-    "patch-package": "^8.0.0"
+    "preferenceComponent": "overlay-preference",
+    "shortDescription": "Show extra information on computer screen.",
+    "mainIcon": "overlay-main-logo.svg",
+    "menuIcon": "overlay-white-icon.svg"
   },
   "devDependencies": {
     "prettier": "^3.5.3",
